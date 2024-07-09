@@ -14,11 +14,11 @@ Route::prefix('auth')->group(function ($router) {
     Route::get('me', [AuthController::class, 'me']);
 });
 
-Route::middleware(['role:manager|superadmin','permission:permission manage|role manage'])->apiResource('permission', PermissionController::class);
+Route::middleware(['permission:permission manage|role manage'])->apiResource('permission', PermissionController::class);
 
-Route::middleware(['role:manager|superadmin','permission:role manage'])->apiResource('role', RoleController::class);
+Route::middleware(['permission:role manage'])->apiResource('role', RoleController::class);
 
-Route::middleware(['role:manager|superadmin','permission:role manage'])->prefix('role')->group(
+Route::middleware(['permission:role manage'])->prefix('role')->group(
     function ($router) {
         Route::post('assignRole',[RoleController::class, 'assignRole']);
         Route::post('removeRole',[RoleController::class, 'removeRole']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -56,7 +57,6 @@ class AuthController extends Controller implements HasMiddleware
      *                   type="string",
      *                   description="expiration time"
      *               )
-     *               )
      *           )
      *       ),
      *       @OA\Response(
@@ -73,9 +73,14 @@ class AuthController extends Controller implements HasMiddleware
      *       )
      *  )
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
+        $credentials = $request->validate(
+            [
+                'email' => ['required', 'email'],
+                'password' => ['required', 'string', 'min:6'],
+            ]
+        );
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -121,6 +126,17 @@ class AuthController extends Controller implements HasMiddleware
      *                   type="string",
      *                   description="expiration time"
      *               )
+     *           )
+     *       ),
+     *       @OA\Response(
+     *           response=422,
+     *           description="Unprocessable Content",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                   property="message",
+     *                   type="string",
+     *                   description="message"
      *               )
      *           )
      *       )
@@ -264,7 +280,6 @@ class AuthController extends Controller implements HasMiddleware
      *                   property="expires_in",
      *                   type="string",
      *                   description="expiration time"
-     *               )
      *               )
      *           )
      *       ),
